@@ -24,6 +24,8 @@ type (
 		PollInterval time.Duration // Interval between status checks (default: 10s)
 		Timeout      time.Duration // Maximum time to wait for job completion (default: 30m)
 		Debug        bool          // Enable debug mode to show detailed parameter information
+		CFSAClientID string // Cloudflare Service Auth Client ID
+		CFSAClientSecret string // Cloudflare Service Auth Client Secret
 	}
 )
 
@@ -116,8 +118,13 @@ func (p Plugin) Exec() error {
 		Token:    p.Token,
 	}
 
+	cfSA := &CFServiceAuth{
+		ClientID: p.CFSAClientID,
+		ClientSecret: p.CFSAClientSecret,
+	}
+
 	// Initialize Jenkins client
-	jenkins := NewJenkins(auth, p.BaseURL, p.RemoteToken, p.Insecure, p.Debug)
+	jenkins := NewJenkins(auth, p.BaseURL, p.RemoteToken, p.Insecure, p.Debug,cfSA)
 
 	// Parse job parameters
 	params := parseParameters(p.Parameters)
