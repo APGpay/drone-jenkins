@@ -124,6 +124,16 @@ func main() {
 			Usage:   "enable debug mode to show detailed parameter information",
 			EnvVars: []string{"PLUGIN_DEBUG", "JENKINS_DEBUG", "INPUT_DEBUG"},
 		},
+		&cli.StringFlag{
+			Name:    "cf-sa-client-id",
+			Usage:   "cloudflare service auth client id",
+			EnvVars: []string{"CF_SA_CLIENT_ID"},
+		},
+		&cli.StringFlag{
+			Name:    "cf-sa-client-secret",
+			Usage:   "cloudflare service auth client secret",
+			EnvVars: []string{"CF_SA_CLIENT_SECRET"},
+		},
 	}
 
 	// Override a template
@@ -189,6 +199,8 @@ func run(c *cli.Context) error {
 		PollInterval: c.Duration("poll-interval"),
 		Timeout:      c.Duration("timeout"),
 		Debug:        c.Bool("debug"),
+		CFSAClientID: c.String("cf-sa-client-id"),
+		CFSAClientSecret: c.String("cf-sa-client-secret"),
 	}
 
 	// Display plugin configuration in debug mode

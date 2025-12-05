@@ -30,6 +30,7 @@ type (
 		Token   string // Remote trigger token
 		Client  *http.Client
 		Debug   bool // Enable debug mode to show detailed information
+		CFSA *CFServiceAuth
 	}
 
 	// QueueItem represents a Jenkins queue item response
@@ -54,10 +55,15 @@ type (
 		URL       string `json:"url"`
 		Timestamp int64  `json:"timestamp"`
 	}
+
+	CFServiceAuth struct {
+		ClientID string
+		ClientSecret string
+	}
 )
 
 // NewJenkins is initial Jenkins object
-func NewJenkins(auth *Auth, url string, token string, insecure bool, debug bool) *Jenkins {
+func NewJenkins(auth *Auth, url string, token string, insecure bool, debug bool, cfSA *CFServiceAuth) *Jenkins {
 	url = strings.TrimRight(url, "/")
 
 	client := http.DefaultClient
@@ -76,6 +82,7 @@ func NewJenkins(auth *Auth, url string, token string, insecure bool, debug bool)
 		Token:   token,
 		Client:  client,
 		Debug:   debug,
+		CFSA: cfSA,
 	}
 }
 
@@ -95,6 +102,13 @@ func (jenkins *Jenkins) sendRequest(req *http.Request) (*http.Response, error) {
 	if jenkins.Auth != nil {
 		req.SetBasicAuth(jenkins.Auth.Username, jenkins.Auth.Token)
 	}
+	
+	// 添加 Cloudflare Access 认证头
+	if jenkins.CFSA != nil && jenkins.CFSA.ClientID != "" && jenkins.CFSA.ClientSecret != "" {
+		req.Header.Set("CF-Access-Client-Id", jenkins.CFSA.ClientID)
+		req.Header.Set("CF-Access-Client-Secret", jenkins.CFSA.ClientSecret)
+	}
+	
 	return jenkins.Client.Do(req)
 }
 
