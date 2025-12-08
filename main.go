@@ -220,6 +220,8 @@ func run(c *cli.Context) error {
 			PollInterval time.Duration
 			Timeout      time.Duration
 			Debug        bool
+			CFSAClientID string
+			CFSAClientSecret string
 		}{
 			BaseURL:      plugin.BaseURL,
 			Username:     plugin.Username,
@@ -232,6 +234,9 @@ func run(c *cli.Context) error {
 			PollInterval: plugin.PollInterval,
 			Timeout:      plugin.Timeout,
 			Debug:        plugin.Debug,
+			CFSAClientID	: plugin.CFSAClientID,
+			CFSAClientSecret: plugin.CFSAClientSecret,
+
 		}
 
 		if err := godump.Dump(displayPlugin); err != nil {
